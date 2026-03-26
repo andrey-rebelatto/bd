@@ -1,0 +1,18 @@
+services:
+  universidade-db:
+    build: .
+    ports:
+      - "5234:1433"
+    environment:
+      SA_PASSWORD: "Universidade@2025"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - sqldata:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "SA", "-P", "Universidade@2025", "-C", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  sqldata:
