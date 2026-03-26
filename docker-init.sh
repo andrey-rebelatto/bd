@@ -15,13 +15,13 @@ for i in {1..60}; do
 done
 
 echo "Criando banco e tabelas..."
-/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -i /init/create.sql
+/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -i /init/schema/create.sql
 
 echo "Criando procedures..."
-/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -d Universidade -i /init/create-procedure.sql
+/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -d Universidade -i /init/procedures/create-procedure.sql
 
 echo "Inserindo matrículas iniciais..."
-/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -d Universidade -i /init/insert-aluno.sql
+/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -d Universidade -i /init/seeds/insert-aluno.sql
 
 echo "Banco de dados Universidade inicializado com sucesso."
 
