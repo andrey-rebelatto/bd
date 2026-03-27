@@ -1,11 +1,30 @@
---  Exemplo de execução da PROCEDURE para lançar as notas do aluno de matricula 1, do curso de sigla ENG, 
---  da disciplina de BDA no período letivo de 2025, com nota 7, duas faltas no primeiro bimestre.
+-- ============================================================
+-- EXEMPLO COMPLETO: Fluxo de um aluno no sistema universitário
+-- ============================================================
 
-EXEC sp_CadastraNotas @MATRICULA = 1,      -- int
-                      @CURSO = 'ENG',      -- char(3)
-                      @MATERIA = 'BDA',    -- char(3)
-                      @PERLETIVO = '2025', -- char(4)
-                      @NOTA = 6.0,         -- float
-                      @FALTA = 0,
-                      @BIMESTRE = 2      -- int
-          
+-- 1. Matricula automática do aluno 1 no curso ENG, período 2025
+EXEC sp_MatricularAluno @MATRICULA = 1,
+                        @CURSO     = 'ENG',
+                        @PERLETIVO = 2025;
+
+-- 2. Lançamento de notas e faltas por bimestre (disciplina BDA)
+EXEC sp_CadastraNotas @MATRICULA = 1, @CURSO = 'ENG', @MATERIA = 'BDA',
+                      @PERLETIVO = 2025, @NOTA = 6.0, @FALTA = 2, @BIMESTRE = 1;
+
+EXEC sp_CadastraNotas @MATRICULA = 1, @CURSO = 'ENG', @MATERIA = 'BDA',
+                      @PERLETIVO = 2025, @NOTA = 6.5, @FALTA = 1, @BIMESTRE = 2;
+
+EXEC sp_CadastraNotas @MATRICULA = 1, @CURSO = 'ENG', @MATERIA = 'BDA',
+                      @PERLETIVO = 2025, @NOTA = 5.5, @FALTA = 3, @BIMESTRE = 3;
+
+EXEC sp_CadastraNotas @MATRICULA = 1, @CURSO = 'ENG', @MATERIA = 'BDA',
+                      @PERLETIVO = 2025, @NOTA = 6.0, @FALTA = 0, @BIMESTRE = 4;
+-- Resultado esperado: RESULTADO = 'EXAME' (media ~6.0)
+
+-- 3. Lançamento da nota de exame
+EXEC sp_LancarExame @MATRICULA  = 1,
+                    @CURSO      = 'ENG',
+                    @MATERIA    = 'BDA',
+                    @PERLETIVO  = 2025,
+                    @NOTAEXAME  = 6.0;
+-- Resultado esperado: MEDIAFINAL = 6.0, RESULTADO = 'APROVADO'
