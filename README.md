@@ -1,64 +1,110 @@
-# BD
+# BD — Universidade
 
-- [Linguagem SQL (II) Exercício Procedure (Universidade)](https://mestredornel.com.br/exercicios-procedure/)
+Projeto monorepo com banco SQL Server, API Express e frontend React para visualização de dados.
 
----
-
-## Docker — Banco de dados Universidade
-
-Banco SQL Server 2022 com schema e procedures já configurados, exposto na porta `5234`.
-
-**Credenciais:**
-- Host: `localhost:5234`
-- Usuário: `SA`
-- Senha: `Universidade@2025`
-- Banco: `Universidade`
+- [Exercício original — Procedure (Universidade)](https://mestredornel.com.br/exercicios-procedure/)
 
 ---
 
-### Subir o banco
+## Estrutura
+
+```
+.
+├── apps/
+│   ├── api/          # Express + MSSQL (porta 3001)
+│   └── web/          # React + Vite + Tailwind (porta 5173)
+├── db/               # Scripts SQL (schema, procedures)
+└── docker-compose.yml
+```
+
+---
+
+## Pré-requisitos
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Node.js](https://nodejs.org/) v20+
+- npm v9+
+
+---
+
+## 1. Banco de dados
+
+### Subir (primeira vez)
 
 ```bash
 docker compose up --build
 ```
 
-Na primeira execução a imagem é construída e o banco é inicializado automaticamente. Nas próximas, o volume já existe e os dados são preservados:
+Nas execuções seguintes, o volume já existe e os dados são preservados:
 
 ```bash
 docker compose up
 ```
 
----
-
-### Parar o banco
+### Parar
 
 ```bash
 docker compose down
 ```
 
----
-
-### Resetar o banco (apagar todos os dados)
-
-Remove os containers **e o volume** com os dados, forçando a reinicialização do schema na próxima subida:
+### Resetar (apaga todos os dados)
 
 ```bash
 docker compose down -v
 docker compose up --build
 ```
 
----
-
 ### Limpar tudo (imagem + dados)
-
-Remove containers, volumes e a imagem buildada localmente:
 
 ```bash
 docker compose down -v --rmi local
-```
-
-Para subir novamente após isso é necessário rebuildar:
-
-```bash
 docker compose up --build
 ```
+
+**Credenciais:**
+
+| Campo    | Valor              |
+| -------- | ------------------ |
+| Host     | `localhost:5234`   |
+| Usuário  | `SA`               |
+| Senha    | `Universidade@2025`|
+| Banco    | `Universidade`     |
+
+---
+
+## 2. Instalar dependências
+
+Na raiz do projeto:
+
+```bash
+npm install
+```
+
+---
+
+## 3. Rodar a aplicação
+
+### API + Frontend juntos
+
+```bash
+npm run dev
+```
+
+### Separados
+
+```bash
+npm run dev:api   # somente API  → http://localhost:3001
+npm run dev:web   # somente web  → http://localhost:5173
+```
+
+> Certifique-se de que o banco está rodando antes de iniciar a API.
+
+---
+
+## Portas
+
+| Serviço  | Porta  |
+| -------- | ------ |
+| Banco DB | `5234` |
+| API      | `3001` |
+| Frontend | `5173` |
