@@ -103,4 +103,73 @@ router.get('/:tableName', async (req: Request, res: Response) => {
   }
 });
 
+// POST /api/tables/ALUNOS
+router.post('/ALUNOS', async (req: Request, res: Response) => {
+  const { nome } = req.body as { nome: string };
+  if (!nome?.trim()) { res.status(400).json({ error: 'nome é obrigatório' }); return; }
+  try {
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('NOME', sql.VarChar(50), nome.trim())
+      .query('INSERT INTO ALUNOS (NOME) OUTPUT INSERTED.* VALUES (@NOME)');
+    res.json({ data: result.recordset });
+  } catch (err: unknown) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Erro desconhecido' });
+  }
+});
+
+// POST /api/tables/CURSOS
+router.post('/CURSOS', async (req: Request, res: Response) => {
+  const { curso, nome } = req.body as { curso: string; nome: string };
+  if (!curso?.trim() || !nome?.trim()) { res.status(400).json({ error: 'curso e nome são obrigatórios' }); return; }
+  try {
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('CURSO', sql.Char(3), curso.trim().toUpperCase())
+      .input('NOME', sql.VarChar(50), nome.trim())
+      .query('INSERT INTO CURSOS (CURSO, NOME) OUTPUT INSERTED.* VALUES (@CURSO, @NOME)');
+    res.json({ data: result.recordset });
+  } catch (err: unknown) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Erro desconhecido' });
+  }
+});
+
+// POST /api/tables/PROFESSOR
+router.post('/PROFESSOR', async (req: Request, res: Response) => {
+  const { nome } = req.body as { nome: string };
+  if (!nome?.trim()) { res.status(400).json({ error: 'nome é obrigatório' }); return; }
+  try {
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('NOME', sql.VarChar(50), nome.trim())
+      .query('INSERT INTO PROFESSOR (NOME) OUTPUT INSERTED.* VALUES (@NOME)');
+    res.json({ data: result.recordset });
+  } catch (err: unknown) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Erro desconhecido' });
+  }
+});
+
+// POST /api/tables/MATERIAS
+router.post('/MATERIAS', async (req: Request, res: Response) => {
+  const { sigla, nome, cargaHoraria, curso, professor } = req.body as {
+    sigla: string; nome: string; cargaHoraria: number; curso: string; professor?: number;
+  };
+  if (!sigla?.trim() || !nome?.trim() || !cargaHoraria || !curso?.trim()) {
+    res.status(400).json({ error: 'sigla, nome, cargaHoraria e curso são obrigatórios' }); return;
+  }
+  try {
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('SIGLA', sql.Char(3), sigla.trim().toUpperCase())
+      .input('NOME', sql.VarChar(50), nome.trim())
+      .input('CARGAHORARIA', sql.Int, cargaHoraria)
+      .input('CURSO', sql.Char(3), curso.trim().toUpperCase())
+      .input('PROFESSOR', sql.Int, professor ?? null)
+      .query('INSERT INTO MATERIAS (SIGLA, NOME, CARGAHORARIA, CURSO, PROFESSOR) OUTPUT INSERTED.* VALUES (@SIGLA, @NOME, @CARGAHORARIA, @CURSO, @PROFESSOR)');
+    res.json({ data: result.recordset });
+  } catch (err: unknown) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Erro desconhecido' });
+  }
+});
+
 export default router;

@@ -14,15 +14,21 @@ for i in {1..60}; do
     sleep 2
 done
 
-echo "Criando banco e tabelas..."
-/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -i /init/schema/create.sql
+DB_EXISTS=$(/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.databases WHERE name = 'Universidade'" -h -1 | tr -d ' \r\n')
 
-echo "Criando procedures..."
-/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -d Universidade -i /init/procedures/create-procedure.sql
+if [ "$DB_EXISTS" = "0" ]; then
+    echo "Criando banco e tabelas..."
+    /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -i /init/schema/create.sql
 
-echo "Inserindo matrículas iniciais..."
-/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -d Universidade -i /init/seeds/insert-aluno.sql
+    echo "Criando procedures..."
+    /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -d Universidade -i /init/procedures/create-procedure.sql
 
-echo "Banco de dados Universidade inicializado com sucesso."
+    echo "Inserindo matrículas iniciais..."
+    /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -C -d Universidade -i /init/seeds/insert-aluno.sql
+
+    echo "Banco de dados Universidade inicializado com sucesso."
+else
+    echo "Banco de dados Universidade já existe. Pulando inicialização."
+fi
 
 wait $PID
